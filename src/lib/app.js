@@ -1,12 +1,14 @@
 import express from 'express';
 
 import parsermfmgj from './parser';
+import dbiegki from './db';
 import actors from '../routes/actors';
 import movies from '../routes/movies';
 
 const app = express();
 
 parsermfmgj(app);
+dbiegki();
 
 app
   .route('/actors')

@@ -1,14 +1,6 @@
 import mongoose from 'mongoose';
-import generateId from './plugins/generateId';
 
 const actorSchema = new mongoose.Schema({
-  id: {
-    type: Number,
-    required: true,
-    index: {
-      unique: true,
-    },
-  },
   name: {
     type: String,
     required: true,
@@ -24,7 +16,5 @@ const actorSchema = new mongoose.Schema({
     },
   ],
 });
-
-actorSchema.plugin(generateId());
 
 export default mongoose.model('Actor', actorSchema);

@@ -22,7 +22,7 @@ export default {
 
   // eslint-disable-next-line no-unused-vars
   getOne(req, res, next) {
-    Actor.findOne({ id: req.params.id })
+    Actor.findOne({ _id: req.params.id })
       .populate('movies')
       .exec((err, actor) => {
         if (err) return res.status(400).json(err);
@@ -35,7 +35,7 @@ export default {
   // eslint-disable-next-line no-unused-vars
   updateOne(req, res, next) {
     Actor.findOneAndUpdate(
-      { id: req.params.id },
+      { _id: req.params.id },
       req.body,
       (err, actor) => {
         if (err) return res.status(400).json(err);
@@ -48,7 +48,7 @@ export default {
 
   // eslint-disable-next-line no-unused-vars
   deleteOne(req, res, next) {
-    Actor.findOneAndRemove({ id: req.params.id }, (err) => {
+    Actor.findOneAndRemove({ _id: req.params.id }, (err) => {
       if (err) return res.status(400).json(err);
 
       res.status(204).json();
@@ -57,11 +57,11 @@ export default {
 
   // eslint-disable-next-line no-unused-vars
   addMovie(req, res, next) {
-    Actor.findOne({ id: req.params.id }, (err, actor) => {
+    Actor.findOne({ _id: req.params.id }, (err, actor) => {
       if (err) return res.status(400).json(err);
       if (!actor) return res.status(404).json();
 
-      Movie.findOne({ id: req.body.id }, (err, movie) => {
+      Movie.create(req.body, (err, movie) => {
         if (err) return res.status(400).json(err);
         if (!movie) return res.status(404).json();
 
@@ -77,17 +77,22 @@ export default {
 
   // eslint-disable-next-line no-unused-vars
   deleteMovie(req, res, next) {
-    Actor.findOne({ id: req.params.id }, (err, actor) => {
+    Actor.findOne({ _id: req.params.id }, (err, actor) => {
       if (err) return res.status(400).json(err);
       if (!actor) return res.status(404).json();
 
-      // HACK TO CHANGE
-      actor.movies = [];
-      actor.save((err) => {
-        if (err) return res.status(400).json(err);
+      Movie.findOneAndRemove({ _id: req.params.mid })
+        .exec((err, movie) => {
+          if (err) return res.status(400).json(err);
+          if (!movie) return res.status(404).json();
 
-        res.status(204).json(actor);
-      });
+          actor.movies.push(movie);
+          actor.save((err) => {
+            if (err) return res.status(400).json(err);
+
+            res.status(204).json(actor);
+          });
+        });
     });
   },
 };
